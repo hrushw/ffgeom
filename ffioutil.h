@@ -12,3 +12,5 @@ int ff_chkmagic(void);
 void ff_pn_nbo(uint32_t);
 void ff_putpixel(uint8_t[8]);
 
+void ff_pixfmt4clr(uint8_t[8], uint16_t[4]);
+void ff_4clrfmtpix(uint16_t[4], uint8_t[8]);

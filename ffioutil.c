@@ -50,11 +50,11 @@ void ff_getclr_die(char* color, uint8_t p[8]) {
 
 /* print number in network byte order */
 void ff_pn_nbo(uint32_t n) {
-	uint8_t b0 = n % 256; n /= 256;
-	uint8_t b1 = n % 256; n /= 256;
+	uint8_t b0 = n % 0x100; n /= 0x100;
+	uint8_t b1 = n % 0x100; n /= 0x100;
 
-	putchar(n / 256);
-	putchar(n % 256);
+	putchar(n / 0x100);
+	putchar(n % 0x100);
 	putchar(b1);
 	putchar(b0);
 }
@@ -113,3 +113,10 @@ int ff_chkmagic(void) {
 	return 0;
 }
 
+void ff_pixfmt4clr(uint8_t p[8], uint16_t c[4]) {
+	for(int i = 0; i < 4; ++i) c[i] = (p[2*i] * 0x100) + p[2*i + 1];
+}
+
+void ff_4clrfmtpix(uint16_t c[4], uint8_t p[8]) {
+	for(int i = 0; i < 4; ++i) p[2*i] = c[i] / 0x100, p[2*i + 1] = c[i] % 0x100;
+}
