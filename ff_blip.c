@@ -26,10 +26,7 @@ void blip(int x, int y, int w, int h, uint8_t clrs[4][8], uint8_t p[8]) {
 }
 
 int ff_blip(int argc, char* argv[]) {
-	if(argc < 6) {
-		fprintf(stderr, "Usage: ff_blip width height color0 color1 color2 color3\n");
-		return -1;
-	}
+	ff_argchk(argc, 6, "Usage: ff_blip width height color0 color1 color2 color3\n");
 	uint32_t width = strtol(argv[0], NULL, 0);
 	uint32_t height = strtol(argv[1], NULL, 0);
 	uint8_t clrs[4][8] = {
@@ -51,5 +48,5 @@ int ff_blip(int argc, char* argv[]) {
 		for(uint32_t j = 0; j < width; ++j)
 			blip(j, i, width, height, clrs, p), ff_putpixel(p);
 
-	return 0;
+	exit(EXIT_SUCCESS);
 }

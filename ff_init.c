@@ -13,10 +13,7 @@ SYNOPSIS
 #include "ffioutil.h"
 
 int ff_init(int argc, char* argv[]) {
-	if(argc < 3) {
-		fprintf(stderr, "Usage: ff_init width height color\n");
-		return -1;
-	}
+	ff_argchk(argc, 3, "Usage: ff_init width height color\n");
 	uint32_t width = strtol(argv[0], NULL, 0);
 	uint32_t height = strtol(argv[1], NULL, 0);
 	uint8_t clr[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF };
@@ -30,7 +27,7 @@ int ff_init(int argc, char* argv[]) {
 		for(uint32_t j = 0; j < width; ++j)
 			ff_putpixel(clr);
 
-	return 0;
+	exit(EXIT_SUCCESS);
 }
 
 

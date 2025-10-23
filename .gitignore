@@ -1,3 +1,5 @@
 *.o
 ffgeom
 *.ff
+*.png
+

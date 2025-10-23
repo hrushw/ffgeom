@@ -4,6 +4,13 @@
 
 #include "ffioutil.h"
 
+void ff_argchk(int argc, int req, char* usage) {
+	if(argc < req) {
+		fprintf(stderr, usage);
+		exit(EXIT_FAILURE);
+	}
+}
+
 uint8_t ff_chtohex(char ch) {
 	if('0' <= ch && ch <= '9') return ch - '0';
 	if('a' <= ch && ch <= 'f') return ch - 'a' + 10;
@@ -111,6 +118,11 @@ int ff_chkmagic(void) {
 	if(getchar() != 'l') return -1;
 	if(getchar() != 'd') return -1;
 	return 0;
+}
+
+void ff_chkmagic_die(void) {
+	if(ff_chkmagic())
+		fprintf(stderr, "ERROR: farbfeld magic value not present! The image may be corrupted.\n"), exit(EXIT_FAILURE);
 }
 
 void ff_pixfmt4clr(uint8_t p[8], uint16_t c[4]) {

@@ -1,3 +1,5 @@
+void ff_argchk(int, int, char*);
+
 int ff_scanclr(char*, uint8_t[8]);
 void ff_scan2pix(uint8_t, uint8_t[8]);
 void ff_getclr_die(char*, uint8_t[8]);
@@ -8,6 +10,7 @@ void ff_getpixel_die(uint8_t[8]);
 
 void ff_magic(void);
 int ff_chkmagic(void);
+void ff_chkmagic_die(void);
 
 void ff_pn_nbo(uint32_t);
 void ff_putpixel(uint8_t[8]);
