@@ -29,7 +29,7 @@ int ff_rect(int argc, char* argv[]) {
 	/* Read image size (width and height) */
 	ff_getpixel_die(p);
 	uint32_t width = ff_scan2sz(p);
-	uint32_t height = ff_scan2sz(p);
+	uint32_t height = ff_scan2sz(p+4);
 	ff_putpixel(p);
 
 	for(uint32_t i = 0; i < height; ++i)

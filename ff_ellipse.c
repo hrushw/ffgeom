@@ -27,7 +27,7 @@ int ff_ellipse(int argc, char* argv[]) {
 	uint8_t p[8];
 	ff_getpixel_die(p);
 	uint32_t width = ff_scan2sz(p);
-	uint32_t height = ff_scan2sz(p);
+	uint32_t height = ff_scan2sz(p+4);
 	ff_putpixel(p);
 
 	uint16_t rx2 = rx*rx;
