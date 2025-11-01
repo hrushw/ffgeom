@@ -18,7 +18,7 @@ int ff_rect(int argc, char* argv[]) {
 	uint32_t y = strtol(argv[1], NULL, 0);
 	uint32_t w = strtol(argv[2], NULL, 0);
 	uint32_t h = strtol(argv[3], NULL, 0);
-	uint8_t clr[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF };
+	uint8_t clr[8] = FF_COLOR_BASE;
 	ff_getclr_die(argv[4], clr);
 
 	ff_chkmagic_die();

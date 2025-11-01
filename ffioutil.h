@@ -1,3 +1,5 @@
+#define FF_COLOR_BASE { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF }
+
 void ff_argchk(int, int, char*);
 
 int ff_scanclr(char*, uint8_t[8]);
