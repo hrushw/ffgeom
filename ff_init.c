@@ -17,8 +17,10 @@ void ff_init_(
 	uint8_t clr[8]
 ) {
 	ff_magic();
+
 	ff_pn_nbo(width);
 	ff_pn_nbo(height);
+
 	for(uint32_t i = 0; i < height; ++i)
 		for(uint32_t j = 0; j < width; ++j)
 			ff_putpixel(clr);

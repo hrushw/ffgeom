@@ -3,7 +3,7 @@ CFLAGS=-Wall -Wextra -Wpedantic -Wvla
 
 CCOMP=$(CC) $(CFLAGS)
 
-OBJS=main.o ffioutil.o ff_init.o ff_rect.o ff_blip.o ff_ellipse.o
+OBJS=ffgeom.o ffioutil.o ff_init.o ff_rect.o ff_blip.o ff_ellipse.o
 
 all: ffgeom
 
@@ -22,8 +22,8 @@ ff_blip.o: ff_blip.c ffioutil.h
 ffioutil.o: ffioutil.c ffioutil.h
 	$(CCOMP) ffioutil.c -c -o ffioutil.o
 
-main.o: main.c ffioutil.h
-	$(CCOMP) main.c -c -o main.o
+ffgeom.o: ffgeom.c ffioutil.h
+	$(CCOMP) ffgeom.c -c -o ffgeom.o
 
 ffgeom: $(OBJS)
 	$(CC) $(OBJS) -o ffgeom

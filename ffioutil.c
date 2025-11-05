@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #include "ffioutil.h"
 
@@ -57,17 +58,18 @@ void ff_getclr_die(char* color, uint8_t p[8]) {
 
 /* print number in network byte order */
 void ff_pn_nbo(uint32_t n) {
-	uint8_t b0 = n % 0x100; n /= 0x100;
-	uint8_t b1 = n % 0x100; n /= 0x100;
+	uint8_t nbo[4] = {0};
+	nbo[3] = n % 0x100; n /= 0x100;
+	nbo[2] = n % 0x100; n /= 0x100;
 
-	putchar(n / 0x100);
-	putchar(n % 0x100);
-	putchar(b1);
-	putchar(b0);
+	nbo[1] = n / 0x100;
+	nbo[0] = n % 0x100;
+
+	write(1, nbo, 4);
 }
 
 void ff_putpixel(uint8_t clr[8]) {
-	for(uint8_t i = 0; i < 8; ++i) putchar(clr[i]);
+	if( (write(1, clr, 8) != 8)) exit(EXIT_FAILURE);
 }
 
 
@@ -95,28 +97,16 @@ void ff_getpixel_die(uint8_t p[8]) {
 		fprintf(stderr, "ERROR: Early EOF!\n"), exit(EXIT_FAILURE);
 }
 
-
-
+const char* ffmagic = "farbfeld";
 void ff_magic(void) {
-	putchar('f');
-	putchar('a');
-	putchar('r');
-	putchar('b');
-	putchar('f');
-	putchar('e');
-	putchar('l');
-	putchar('d');
+	if( (write(1, ffmagic, 8) != 8)) exit(EXIT_FAILURE);
 }
 
 int ff_chkmagic(void) {
-	if(getchar() != 'f') return -1;
-	if(getchar() != 'a') return -1;
-	if(getchar() != 'r') return -1;
-	if(getchar() != 'b') return -1;
-	if(getchar() != 'f') return -1;
-	if(getchar() != 'e') return -1;
-	if(getchar() != 'l') return -1;
-	if(getchar() != 'd') return -1;
+	char magic[8] = {0};
+	if( read(0, magic, 8) != 8 ) return -1;
+	for(uint8_t i = 0; i < 8; ++i)
+		if( magic[i] != ffmagic[i]) return -1;
 	return 0;
 }
 
@@ -126,9 +116,9 @@ void ff_chkmagic_die(void) {
 }
 
 void ff_pixfmt4clr(uint8_t p[8], uint16_t c[4]) {
-	for(int i = 0; i < 4; ++i) c[i] = (p[2*i] * 0x100) + p[2*i + 1];
+	for(uint8_t i = 0; i < 4; ++i) c[i] = (p[2*i] * 0x100) + p[2*i + 1];
 }
 
 void ff_4clrfmtpix(uint16_t c[4], uint8_t p[8]) {
-	for(int i = 0; i < 4; ++i) p[2*i] = c[i] / 0x100, p[2*i + 1] = c[i] % 0x100;
+	for(uint8_t i = 0; i < 4; ++i) p[2*i] = c[i] / 0x100, p[2*i + 1] = c[i] % 0x100;
 }

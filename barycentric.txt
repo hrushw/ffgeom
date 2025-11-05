@@ -1,0 +1,49 @@
+Barycentric coordinates (u1, u2, u3) <=> (x, y, z)
+
+| x1 x2 x3 | | u1 |   | x |
+| y1 y2 y3 | | u2 | = | y |
+             | u3 |
+
+u1 + u2 + y3 = 1
+u1 = 1 - u2 - u3
+x1 u1 + x2 u2 + x3 u3
+= x1 - x1 u2 - x1 u3 + x2 u2 + x3 u3
+= (x2 - x1) u2 + (x3 - x1) u3 + x1 = x
+
+| x2 - x1, x3 - x1 | | u2 | = | x - x1 |
+| y2 - y1, y3 - y1 | | u3 | = | y - y1 |
+
+dx := x - x1
+dx2 := x2 - x1
+dx3 := x3 - x1
+
+dy := y - y1
+dy2 := y2 - y1
+dy3 := y3 - y1
+
+| dx2, dx3 | | u2 | = | dx |
+| dy2, dy3 | | u3 | = | dy |
+
+u3 = (dx - u2*dx2) / dx3
+
+dy2*u2 + dy3*u3
+= dy2*u2 + dy3*dx/dx3 - dy3*dx2*u2 / dx3
+= ( (dy2*dx3 - dy3*dy2)*u2 + dy3*dx ) / dx3 = dy
+
+u2 = (dy*dx3 - dx*dy3) / (dy2 * dx3 - dx2 * dy3)
+   = | dx3,  dx |
+     | dy3,  dy |
+	--------------
+     | dx3, dx2 |
+     | dy3, dy2 |
+
+| dx3, dx2 | | u3 | = | dx |
+| dy3, dy2 | | u2 | = | dy |
+
+u3 = - | dx2, dx |
+       | dy2, dy |
+	  --------------
+       | dx3, dx2 |
+       | dy3, dy2 |
+
+
