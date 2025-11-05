@@ -12,7 +12,10 @@ SYNOPSIS
 
 #include "ffioutil.h"
 
-void blip(int x, int y, int w, int h, uint8_t clrs[4][8], uint8_t p[8]) {
+void blip(
+	uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+	uint8_t clrs[4][8], uint8_t p[8]
+) {
 	uint16_t c[4][4] = {{0}};
 	for(int i = 0; i < 4; ++i) ff_pixfmt4clr(clrs[i], c[i]);
 
@@ -25,7 +28,20 @@ void blip(int x, int y, int w, int h, uint8_t clrs[4][8], uint8_t p[8]) {
 	ff_4clrfmtpix(c[0], p);
 }
 
-int ff_blip(int argc, char* argv[]) {
+void ff_blip_(
+	uint32_t width, uint32_t height,
+	uint8_t clrs[4][8]
+) {
+	uint8_t p[8] = FF_COLOR_BASE;
+	ff_magic();
+	ff_pn_nbo(width);
+	ff_pn_nbo(height);
+	for(uint32_t i = 0; i < height; ++i)
+		for(uint32_t j = 0; j < width; ++j)
+			blip(j, i, width, height, clrs, p), ff_putpixel(p);
+}
+
+void ff_blip(int argc, char* argv[]) {
 	ff_argchk(argc, 6, "Usage: ff_blip width height color0 color1 color2 color3\n");
 	uint32_t width = strtol(argv[0], NULL, 0);
 	uint32_t height = strtol(argv[1], NULL, 0);
@@ -35,13 +51,5 @@ int ff_blip(int argc, char* argv[]) {
 	ff_getclr_die(argv[4], clrs[2]);
 	ff_getclr_die(argv[5], clrs[3]);
 
-	uint8_t p[8] = FF_COLOR_BASE;
-	ff_magic();
-	ff_pn_nbo(width);
-	ff_pn_nbo(height);
-	for(uint32_t i = 0; i < height; ++i)
-		for(uint32_t j = 0; j < width; ++j)
-			blip(j, i, width, height, clrs, p), ff_putpixel(p);
-
-	exit(EXIT_SUCCESS);
+	ff_blip_(width, height, clrs);
 }

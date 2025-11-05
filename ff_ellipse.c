@@ -12,15 +12,11 @@ SYNOPSIS:
 
 #include "ffioutil.h"
 
-int ff_ellipse(int argc, char* argv[]) {
-	ff_argchk(argc, 5, "Usage: ff_ellipse x y rx ry color\n");
-	uint32_t x = strtol(argv[0], NULL, 0);
-	uint32_t y = strtol(argv[1], NULL, 0);
-	uint32_t rx = strtol(argv[2], NULL, 0);
-	uint32_t ry = strtol(argv[3], NULL, 0);
-	uint8_t clr[8] = FF_COLOR_BASE;
-	ff_getclr_die(argv[4], clr);
-
+void ff_ellipse_(
+	uint32_t x, uint32_t y,
+	uint32_t rx, uint32_t ry,
+	uint8_t clr[8]
+) {
 	ff_chkmagic_die();
 	ff_magic();
 
@@ -46,6 +42,16 @@ int ff_ellipse(int argc, char* argv[]) {
 			else
 				ff_putpixel(p);
 		}
+}
 
-	exit(EXIT_SUCCESS);
+void ff_ellipse(int argc, char* argv[]) {
+	ff_argchk(argc, 5, "Usage: ff_ellipse x y rx ry color\n");
+	uint32_t x = strtol(argv[0], NULL, 0);
+	uint32_t y = strtol(argv[1], NULL, 0);
+	uint32_t rx = strtol(argv[2], NULL, 0);
+	uint32_t ry = strtol(argv[3], NULL, 0);
+	uint8_t clr[8] = FF_COLOR_BASE;
+	ff_getclr_die(argv[4], clr);
+
+	ff_ellipse_(x, y, rx, ry, clr);
 }

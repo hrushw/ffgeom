@@ -12,15 +12,11 @@ SYNOPSIS:
 
 #include "ffioutil.h"
 
-int ff_rect(int argc, char* argv[]) {
-	ff_argchk(argc, 5, "Usage: ff_rect x y width height color\n");
-	uint32_t x = strtol(argv[0], NULL, 0);
-	uint32_t y = strtol(argv[1], NULL, 0);
-	uint32_t w = strtol(argv[2], NULL, 0);
-	uint32_t h = strtol(argv[3], NULL, 0);
-	uint8_t clr[8] = FF_COLOR_BASE;
-	ff_getclr_die(argv[4], clr);
-
+void ff_rect_(
+	uint32_t x, uint32_t y,
+	uint32_t w, uint32_t h,
+	uint8_t clr[8]
+) {
 	ff_chkmagic_die();
 	ff_magic();
 
@@ -40,6 +36,16 @@ int ff_rect(int argc, char* argv[]) {
 			else
 				ff_putpixel(p);
 		}
+}
 
-	exit(EXIT_SUCCESS);
+void ff_rect(int argc, char* argv[]) {
+	ff_argchk(argc, 5, "Usage: ff_rect x y width height color\n");
+	uint32_t x = strtol(argv[0], NULL, 0);
+	uint32_t y = strtol(argv[1], NULL, 0);
+	uint32_t w = strtol(argv[2], NULL, 0);
+	uint32_t h = strtol(argv[3], NULL, 0);
+	uint8_t clr[8] = FF_COLOR_BASE;
+	ff_getclr_die(argv[4], clr);
+
+	ff_rect_(x, y, w, h, clr);
 }
