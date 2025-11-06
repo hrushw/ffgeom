@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+#include "ffioutil.h"
+
+/*
+NAME
+	ff_init - print farbfeld image with given dimensions and color to stdout
+
+SYNOPSIS
+	ff_init width height color
+*/
+void ff_init(
+	uint32_t width, uint32_t height,
+	uint8_t clr[8]
+) {
+	ff_magic();
+
+	ff_pn_nbo(width);
+	ff_pn_nbo(height);
+
+	for(uint32_t i = 0; i < height; ++i)
+		for(uint32_t j = 0; j < width; ++j)
+			ff_putpixel(clr);
+}
+
+/*
+NAME
+	ff_rect: add filled rectangle of given color to farbfeld image
+
+SYNOPSIS:
+	ff_rect x y width height color
+*/
+void ff_rect(
+	uint32_t x, uint32_t y,
+	uint32_t w, uint32_t h,
+	uint8_t clr[8]
+) {
+	ff_chkmagic_die();
+	ff_magic();
+
+	uint8_t p[8];
+
+	/* Read image size (width and height) */
+	ff_getpixel_die(p);
+	uint32_t width = ff_scan2sz(p);
+	uint32_t height = ff_scan2sz(p+4);
+	ff_putpixel(p);
+
+	for(uint32_t i = 0; i < height; ++i)
+		for(uint32_t j = 0; j < width; ++j) {
+			ff_getpixel_die(p);
+			if(i >= y && j >= x && (i - y) < h && (j - x) < w)
+				ff_putpixel(clr);
+			else
+				ff_putpixel(p);
+		}
+}
+
+/*
+NAME
+	ff_rect: add filled ellipse of given color to farbfeld image
+
+SYNOPSIS:
+	ff_ellipse x y rx ry color
+*/
+void ff_ellipse(
+	uint32_t x, uint32_t y,
+	uint32_t rx, uint32_t ry,
+	uint8_t clr[8]
+) {
+	ff_chkmagic_die();
+	ff_magic();
+
+	uint8_t p[8];
+	ff_getpixel_die(p);
+	uint32_t width = ff_scan2sz(p);
+	uint32_t height = ff_scan2sz(p+4);
+	ff_putpixel(p);
+
+	uint16_t rx2 = rx*rx;
+	uint16_t ry2 = ry*ry;
+	uint32_t rx2y2 = rx2*ry2;
+	for(uint32_t i = 0; i < height; ++i)
+		for(uint32_t j = 0; j < width; ++j) {
+			ff_getpixel_die(p);
+			uint32_t dx2r = j > x ? j - x : x - j;
+			uint32_t dy2r = i > y ? i - y : y - i;
+			dx2r *= dx2r; dy2r *= dy2r;
+			dx2r *= ry2; dy2r *= rx2;
+
+			if((dx2r + dy2r) <= rx2y2)
+				ff_putpixel(clr);
+			else
+				ff_putpixel(p);
+		}
+}
+
+/*
+NAME
+	ff_blip - generate gradient using corner colors and bilinear interpolation
+
+SYNOPSIS
+	ff_blip width height color0 color1 color2 color3
+*/
+void blip(
+	uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+	uint8_t clrs[4][8], uint8_t p[8]
+) {
+	uint16_t c[4][4] = {{0}};
+	for(int i = 0; i < 4; ++i) ff_pixfmt4clr(clrs[i], c[i]);
+
+	for(int i = 0; i < 4; ++i) {
+		c[0][i] = (c[0][i] * (w - x) + (c[1][i] * x)) / w;
+		c[2][i] = (c[2][i] * (w - x) + (c[3][i] * x)) / w;
+
+		c[0][i] = (c[0][i] * (h - y)  + (c[2][i] * y)) / h;
+	}
+	ff_4clrfmtpix(c[0], p);
+}
+
+void ff_blip(
+	uint32_t width, uint32_t height,
+	uint8_t clrs[4][8]
+) {
+	uint8_t p[8] = FF_COLOR_BASE;
+	ff_magic();
+	ff_pn_nbo(width);
+	ff_pn_nbo(height);
+	for(uint32_t i = 0; i < height; ++i)
+		for(uint32_t j = 0; j < width; ++j)
+			blip(j, i, width, height, clrs, p), ff_putpixel(p);
+}
+
+
