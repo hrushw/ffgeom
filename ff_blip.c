@@ -28,7 +28,7 @@ void blip(
 	ff_4clrfmtpix(c[0], p);
 }
 
-void ff_blip_(
+void ff_blip(
 	uint32_t width, uint32_t height,
 	uint8_t clrs[4][8]
 ) {
@@ -41,15 +41,4 @@ void ff_blip_(
 			blip(j, i, width, height, clrs, p), ff_putpixel(p);
 }
 
-void ff_blip(int argc, char* argv[]) {
-	ff_argchk(argc, 6, "Usage: ff_blip width height color0 color1 color2 color3\n");
-	uint32_t width = strtol(argv[0], NULL, 0);
-	uint32_t height = strtol(argv[1], NULL, 0);
-	uint8_t clrs[4][8] = { FF_COLOR_BASE, FF_COLOR_BASE, FF_COLOR_BASE, FF_COLOR_BASE };
-	ff_getclr_die(argv[2], clrs[0]);
-	ff_getclr_die(argv[3], clrs[1]);
-	ff_getclr_die(argv[4], clrs[2]);
-	ff_getclr_die(argv[5], clrs[3]);
 
-	ff_blip_(width, height, clrs);
-}
