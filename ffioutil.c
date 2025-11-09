@@ -47,13 +47,23 @@ void ff_scan2pix(uint8_t clrlen, uint8_t p[8]) {
 	}
 }
 
-void ff_getclr_die(char* color, uint8_t p[8]) {
+int ff_getclr(char* color, uint8_t p[8]) {
 	uint8_t clrlen = ff_scanclr(color, p);
-	if(!clrlen)
-		fprintf(stderr, "Error: invalid color\n"), exit(EXIT_FAILURE);
+	if(!clrlen) return -1;
 	ff_scan2pix(clrlen, p);
+	return 0;
 }
 
+int ff_getclr_log(char* color, uint8_t p[8]) {
+	int ret = 0;
+	if((ret = ff_getclr(color, p)))
+		fprintf(stderr, "Error: invalid color\n");
+	return ret;
+}
+
+void ff_getclr_die(char* color, uint8_t p[8]) {
+	if(ff_getclr_log(color, p)) exit(EXIT_FAILURE);
+}
 
 
 /* print number in network byte order */
@@ -92,9 +102,15 @@ uint32_t ff_scan2sz(uint8_t scan[4]) {
 	);
 }
 
+int ff_getpixel_log(uint8_t p[8]) {
+	int ret = 0;
+	if((ret =ff_getpixel(p)))
+		fprintf(stderr, "ERROR: Early EOF!\n");
+	return ret;
+}
+
 void ff_getpixel_die(uint8_t p[8]) {
-	if(ff_getpixel(p))
-		fprintf(stderr, "ERROR: Early EOF!\n"), exit(EXIT_FAILURE);
+	if(ff_getpixel_log(p)) exit(EXIT_FAILURE);
 }
 
 const char* ffmagic = "farbfeld";
@@ -110,9 +126,15 @@ int ff_chkmagic(void) {
 	return 0;
 }
 
+int ff_chkmagic_log(void) {
+	int ret = 0;
+	if((ret = ff_chkmagic()))
+		fprintf(stderr, "ERROR: farbfeld magic value not present! The image may be corrupted.\n");
+	return ret;
+}
+
 void ff_chkmagic_die(void) {
-	if(ff_chkmagic())
-		fprintf(stderr, "ERROR: farbfeld magic value not present! The image may be corrupted.\n"), exit(EXIT_FAILURE);
+	if(ff_chkmagic_log()) exit(EXIT_FAILURE);
 }
 
 void ff_pixfmt4clr(uint8_t p[8], uint16_t c[4]) {

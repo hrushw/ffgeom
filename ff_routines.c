@@ -11,7 +11,7 @@ NAME
 SYNOPSIS
 	ff_init width height color
 */
-void ff_init(
+int ff_init(
 	uint32_t width, uint32_t height,
 	uint8_t clr[8]
 ) {
@@ -23,6 +23,8 @@ void ff_init(
 	for(uint32_t i = 0; i < height; ++i)
 		for(uint32_t j = 0; j < width; ++j)
 			ff_putpixel(clr);
+
+	return 0;
 }
 
 /*
@@ -32,30 +34,33 @@ NAME
 SYNOPSIS:
 	ff_rect x y width height color
 */
-void ff_rect(
+int ff_rect(
 	uint32_t x, uint32_t y,
 	uint32_t w, uint32_t h,
 	uint8_t clr[8]
 ) {
-	ff_chkmagic_die();
+	int ret = 0;
+	if((ret = ff_chkmagic_log())) return ret;
 	ff_magic();
 
 	uint8_t p[8];
 
 	/* Read image size (width and height) */
-	ff_getpixel_die(p);
+	if((ret = ff_getpixel_log(p))) return ret;
 	uint32_t width = ff_scan2sz(p);
 	uint32_t height = ff_scan2sz(p+4);
 	ff_putpixel(p);
 
 	for(uint32_t i = 0; i < height; ++i)
 		for(uint32_t j = 0; j < width; ++j) {
-			ff_getpixel_die(p);
+			if((ret = ff_getpixel_log(p))) return ret;
 			if(i >= y && j >= x && (i - y) < h && (j - x) < w)
 				ff_putpixel(clr);
 			else
 				ff_putpixel(p);
 		}
+
+	return 0;
 }
 
 /*
@@ -65,16 +70,17 @@ NAME
 SYNOPSIS:
 	ff_ellipse x y rx ry color
 */
-void ff_ellipse(
+int ff_ellipse(
 	uint32_t x, uint32_t y,
 	uint32_t rx, uint32_t ry,
 	uint8_t clr[8]
 ) {
-	ff_chkmagic_die();
+	int ret = 0;
+	if((ret = ff_chkmagic_log())) return ret;
 	ff_magic();
 
 	uint8_t p[8];
-	ff_getpixel_die(p);
+	if((ret = ff_getpixel_log(p))) return ret;
 	uint32_t width = ff_scan2sz(p);
 	uint32_t height = ff_scan2sz(p+4);
 	ff_putpixel(p);
@@ -84,7 +90,7 @@ void ff_ellipse(
 	uint32_t rx2y2 = rx2*ry2;
 	for(uint32_t i = 0; i < height; ++i)
 		for(uint32_t j = 0; j < width; ++j) {
-			ff_getpixel_die(p);
+			if((ret = ff_getpixel_log(p))) return ret;
 			uint32_t dx2r = j > x ? j - x : x - j;
 			uint32_t dy2r = i > y ? i - y : y - i;
 			dx2r *= dx2r; dy2r *= dy2r;
@@ -95,6 +101,8 @@ void ff_ellipse(
 			else
 				ff_putpixel(p);
 		}
+
+	return 0;
 }
 
 /*
@@ -120,7 +128,7 @@ void blip(
 	ff_4clrfmtpix(c[0], p);
 }
 
-void ff_blip(
+int ff_blip(
 	uint32_t width, uint32_t height,
 	uint8_t clrs[4][8]
 ) {
@@ -131,6 +139,8 @@ void ff_blip(
 	for(uint32_t i = 0; i < height; ++i)
 		for(uint32_t j = 0; j < width; ++j)
 			blip(j, i, width, height, clrs, p), ff_putpixel(p);
+
+	return 0;
 }
 
 

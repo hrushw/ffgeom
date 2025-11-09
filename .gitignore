@@ -1,5 +1,6 @@
 *.o
 ffgeom
+test
 *.ff
 *.png
-
+*.txt
