@@ -27,6 +27,10 @@ int ff_init(
 	return 0;
 }
 
+static inline int in_rect(uint32_t x, uint32_t y, uint32_t x0, uint32_t y0, uint32_t w, uint32_t h) {
+	return x > x0 && y >= y0 && (x0 - x) < w && (y0 - y) < h;
+}
+
 /*
 NAME
 	ff_rect: add filled rectangle of given color to farbfeld image
@@ -54,7 +58,7 @@ int ff_rect(
 	for(uint32_t i = 0; i < height; ++i)
 		for(uint32_t j = 0; j < width; ++j) {
 			if((ret = ff_getpixel_log(p))) return ret;
-			if(i >= y && j >= x && (i - y) < h && (j - x) < w)
+			if(in_rect(j, i, x, y, w, h))
 				ff_putpixel(clr);
 			else
 				ff_putpixel(p);
@@ -85,6 +89,7 @@ int ff_ellipse(
 	uint32_t height = ff_scan2sz(p+4);
 	ff_putpixel(p);
 
+	/* this very clearly overflows at r > 255 */
 	uint16_t rx2 = rx*rx;
 	uint16_t ry2 = ry*ry;
 	uint32_t rx2y2 = rx2*ry2;
