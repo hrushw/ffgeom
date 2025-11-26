@@ -158,7 +158,7 @@ int ff_blip(
 	uint32_t width, uint32_t height,
 	uint8_t clrs[4][8]
 ) {
-	uint8_t p[8] = FF_COLOR_BASE;
+	uint8_t p[8] = {0};
 	ff_magic();
 	ff_pn_nbo(width);
 	ff_pn_nbo(height);

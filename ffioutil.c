@@ -21,8 +21,9 @@ int ff_scanclr(char* clr, uint8_t p[8]) {
 	return n < 6 ? 0 : n < 8 ? 6 : n < 12 ? 8 : n < 16 ? 12 : 16;
 }
 
-/* assumes p was initialized to 0x000000000000FFFF before scan */
+/* Expand color to 32-bit RGBA (sets alpha to 1.0 if not specified) */
 void ff_scan2pix(uint8_t clrlen, uint8_t p[8]) {
+	p[7] = (p[6] = 0xFF);
 	switch(clrlen) {
 		case 16:
 		case 12:

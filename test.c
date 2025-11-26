@@ -13,7 +13,7 @@ int layer0(int poutfd) {
 
 	int out = 0;
 
-	uint8_t clr[8] = FF_COLOR_BASE;
+	uint8_t clr[8] = {0};
 	if(ff_getclr("7f0000", clr)) {
 		out = -1;
 		goto end;
@@ -35,7 +35,7 @@ int layer1(int pinfd, int poutfd) {
 	if(fcntl(poutfd, F_DUPFD, 1) != 1) return -1;
 
 	int out = 0;
-	uint8_t clr[8] = FF_COLOR_BASE;
+	uint8_t clr[8] = {0};
 	if(ff_getclr("007F3F", clr)) {
 		out = -1;
 		goto end;
@@ -53,7 +53,7 @@ int layer2(int pinfd) {
 	if(fcntl(pinfd, F_DUPFD, 0) != 0) return -1;
 
 	int out = 0;
-	uint8_t clr[8] = FF_COLOR_BASE;
+	uint8_t clr[8] = {0};
 	if(ff_getclr("7f007f", clr)) {
 		out = -1;
 		goto end;
