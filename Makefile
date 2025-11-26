@@ -5,7 +5,7 @@ CCOMP=$(CC) $(CFLAGS)
 
 OBJS=ffioutil.o ff_routines.o
 
-all: test
+all: ff_routines.o ffioutil.o
 
 test: test.c ff_routines.c ffioutil.c ff_routines.h ffioutil.h ffioutil.c
 	$(CCOMP) test.c ff_routines.c ffioutil.c -o test
