@@ -44,20 +44,20 @@ int ff_rect(
 	uint8_t clr[8]
 ) {
 	int ret = 0;
-	if((ret = ff_chkmagic_log())) return ret;
+	if((ret = ff_log_chkmagic())) return ret;
 	ff_magic();
 
 	uint8_t p[8];
 
 	/* Read image size (width and height) */
-	if((ret = ff_getpixel_log(p))) return ret;
+	if((ret = ff_log_getpixel(p))) return ret;
 	uint32_t width = ff_scan2sz(p);
 	uint32_t height = ff_scan2sz(p+4);
 	ff_putpixel(p);
 
 	for(uint32_t i = 0; i < height; ++i)
 		for(uint32_t j = 0; j < width; ++j) {
-			if((ret = ff_getpixel_log(p))) return ret;
+			if((ret = ff_log_getpixel(p))) return ret;
 			if(in_rect(j, i, x, y, w, h))
 				ff_putpixel(clr);
 			else
@@ -80,11 +80,11 @@ int ff_ellipse(
 	uint8_t clr[8]
 ) {
 	int ret = 0;
-	if((ret = ff_chkmagic_log())) return ret;
+	if((ret = ff_log_chkmagic())) return ret;
 	ff_magic();
 
 	uint8_t p[8];
-	if((ret = ff_getpixel_log(p))) return ret;
+	if((ret = ff_log_getpixel(p))) return ret;
 	uint32_t width = ff_scan2sz(p);
 	uint32_t height = ff_scan2sz(p+4);
 	ff_putpixel(p);
@@ -95,7 +95,7 @@ int ff_ellipse(
 	uint32_t rx2y2 = rx2*ry2;
 	for(uint32_t i = 0; i < height; ++i)
 		for(uint32_t j = 0; j < width; ++j) {
-			if((ret = ff_getpixel_log(p))) return ret;
+			if((ret = ff_log_getpixel(p))) return ret;
 			uint32_t dx2r = j > x ? j - x : x - j;
 			uint32_t dy2r = i > y ? i - y : y - i;
 			dx2r *= dx2r; dy2r *= dy2r;

@@ -1,16 +1,8 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
 
 #include "ffioutil.h"
-
-void ff_argchk(int argc, int req, char* usage) {
-	if(argc < req) {
-		fprintf(stderr, usage);
-		exit(EXIT_FAILURE);
-	}
-}
 
 uint8_t ff_chtohex(char ch) {
 	if('0' <= ch && ch <= '9') return ch - '0';
@@ -54,20 +46,8 @@ int ff_getclr(char* color, uint8_t p[8]) {
 	return 0;
 }
 
-int ff_getclr_log(char* color, uint8_t p[8]) {
-	int ret = 0;
-	if((ret = ff_getclr(color, p)))
-		fprintf(stderr, "Error: invalid color\n");
-	return ret;
-}
-
-void ff_getclr_die(char* color, uint8_t p[8]) {
-	if(ff_getclr_log(color, p)) exit(EXIT_FAILURE);
-}
-
-
 /* print number in network byte order */
-void ff_pn_nbo(uint32_t n) {
+int ff_pn_nbo(uint32_t n) {
 	uint8_t nbo[4] = {0};
 	nbo[3] = n % 0x100; n /= 0x100;
 	nbo[2] = n % 0x100; n /= 0x100;
@@ -75,13 +55,12 @@ void ff_pn_nbo(uint32_t n) {
 	nbo[1] = n / 0x100;
 	nbo[0] = n % 0x100;
 
-	write(1, nbo, 4);
+	return (write(1, nbo, 4) != 4) ? -1 : 0;
 }
 
-void ff_putpixel(uint8_t clr[8]) {
-	if( (write(1, clr, 8) != 8)) exit(EXIT_FAILURE);
+int ff_putpixel(uint8_t clr[8]) {
+	return (write(1, clr, 8) != 8) ? -1 : 0;
 }
-
 
 
 int ff_getpixel(uint8_t clr[8]) {
@@ -102,20 +81,9 @@ uint32_t ff_scan2sz(uint8_t scan[4]) {
 	);
 }
 
-int ff_getpixel_log(uint8_t p[8]) {
-	int ret = 0;
-	if((ret =ff_getpixel(p)))
-		fprintf(stderr, "ERROR: Early EOF!\n");
-	return ret;
-}
-
-void ff_getpixel_die(uint8_t p[8]) {
-	if(ff_getpixel_log(p)) exit(EXIT_FAILURE);
-}
-
 const char* ffmagic = "farbfeld";
-void ff_magic(void) {
-	if( (write(1, ffmagic, 8) != 8)) exit(EXIT_FAILURE);
+int ff_magic(void) {
+	return (write(1, ffmagic, 8) != 8) ? -1 : 0;
 }
 
 int ff_chkmagic(void) {
@@ -126,17 +94,6 @@ int ff_chkmagic(void) {
 	return 0;
 }
 
-int ff_chkmagic_log(void) {
-	int ret = 0;
-	if((ret = ff_chkmagic()))
-		fprintf(stderr, "ERROR: farbfeld magic value not present! The image may be corrupted.\n");
-	return ret;
-}
-
-void ff_chkmagic_die(void) {
-	if(ff_chkmagic_log()) exit(EXIT_FAILURE);
-}
-
 void ff_pixfmt4clr(uint8_t p[8], uint16_t c[4]) {
 	for(uint8_t i = 0; i < 4; ++i) c[i] = (p[2*i] * 0x100) + p[2*i + 1];
 }
@@ -144,3 +101,27 @@ void ff_pixfmt4clr(uint8_t p[8], uint16_t c[4]) {
 void ff_4clrfmtpix(uint16_t c[4], uint8_t p[8]) {
 	for(uint8_t i = 0; i < 4; ++i) p[2*i] = c[i] / 0x100, p[2*i + 1] = c[i] % 0x100;
 }
+
+/* stderr output wrappers */
+int ff_getclr_log(char* color, uint8_t p[8]) {
+	int ret = 0;
+	if((ret = ff_getclr(color, p)))
+		fprintf(stderr, "Error: invalid color\n");
+	return ret;
+}
+
+int ff_chkmagic_log(void) {
+	int ret = 0;
+	if((ret = ff_chkmagic()))
+		fprintf(stderr, "ERROR: farbfeld magic value not present! The image may be corrupted.\n");
+	return ret;
+}
+
+int ff_getpixel_log(uint8_t p[8]) {
+	int ret = 0;
+	if((ret =ff_getpixel(p)))
+		fprintf(stderr, "ERROR: Early EOF!\n");
+	return ret;
+}
+
+
