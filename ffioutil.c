@@ -103,21 +103,21 @@ void ff_4clrfmtpix(uint16_t c[4], uint8_t p[8]) {
 }
 
 /* stderr output wrappers */
-int ff_getclr_log(char* color, uint8_t p[8]) {
+int ff_log_getclr(char* color, uint8_t p[8]) {
 	int ret = 0;
 	if((ret = ff_getclr(color, p)))
 		fprintf(stderr, "Error: invalid color\n");
 	return ret;
 }
 
-int ff_chkmagic_log(void) {
+int ff_log_chkmagic(void) {
 	int ret = 0;
 	if((ret = ff_chkmagic()))
 		fprintf(stderr, "ERROR: farbfeld magic value not present! The image may be corrupted.\n");
 	return ret;
 }
 
-int ff_getpixel_log(uint8_t p[8]) {
+int ff_log_getpixel(uint8_t p[8]) {
 	int ret = 0;
 	if((ret =ff_getpixel(p)))
 		fprintf(stderr, "ERROR: Early EOF!\n");
