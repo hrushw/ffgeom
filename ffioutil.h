@@ -1,3 +1,6 @@
+#ifndef FF_IOUTIL_H
+#define FF_IOUTIL_H
+
 #include <stdint.h>
 
 void ff_argchk(int, int, char*);
@@ -17,3 +20,5 @@ int ff_putpixel(uint8_t[8]);
 
 void ff_pixfmt4clr(uint8_t[8], uint16_t[4]);
 void ff_4clrfmtpix(uint16_t[4], uint8_t[8]);
+
+#endif

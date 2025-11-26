@@ -3,6 +3,8 @@
 
 #include "ffioutil.h"
 
+const char* farbfeld = "farbfeld";
+
 uint8_t ff_chtohex(char ch) {
 	if('0' <= ch && ch <= '9') return ch - '0';
 	if('a' <= ch && ch <= 'f') return ch - 'a' + 10;
@@ -15,6 +17,7 @@ int ff_scanclr(char* clr, uint8_t p[8]) {
 	for(n = 0; clr[n] && n < 16; ++n) {
 		uint8_t hex = ff_chtohex(clr[n]);
 		if(hex >= 16) break;
+		/* Convert 2 hex digits to byte */
 		p[n/2] = (n % 2) ? (p[n/2] * 16) + hex : hex;
 	}
 
@@ -41,10 +44,9 @@ void ff_scan2pix(uint8_t clrlen, uint8_t p[8]) {
 
 int ff_getclr(char* color, uint8_t p[8]) {
 	uint8_t clrlen = ff_scanclr(color, p);
-	if(!clrlen) return -1;
-	ff_scan2pix(clrlen, p);
-	return 0;
+	return clrlen ? (ff_scan2pix(clrlen, p), 0) : -1;
 }
+
 
 /* print number in network byte order */
 int ff_pn_nbo(uint32_t n) {
@@ -62,7 +64,6 @@ int ff_putpixel(uint8_t clr[8]) {
 	return (write(1, clr, 8) != 8) ? -1 : 0;
 }
 
-
 int ff_getpixel(uint8_t clr[8]) {
 	return (read(0, clr, 8) != 8) ? -1 : 0;
 }
@@ -76,16 +77,15 @@ uint32_t ff_scan2sz(uint8_t scan[4]) {
 	);
 }
 
-const char* ffmagic = "farbfeld";
 int ff_magic(void) {
-	return (write(1, ffmagic, 8) != 8) ? -1 : 0;
+	return (write(1, farbfeld, 8) != 8) ? -1 : 0;
 }
 
 int ff_chkmagic(void) {
 	char magic[8] = {0};
-	if( read(0, magic, 8) != 8 ) return -1;
+	if(read(0, magic, 8) != 8) return -1;
 	for(uint8_t i = 0; i < 8; ++i)
-		if( magic[i] != ffmagic[i]) return -1;
+		if(magic[i] != farbfeld[i]) return -1;
 	return 0;
 }
 
