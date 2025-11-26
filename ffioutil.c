@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
 
@@ -64,20 +63,15 @@ int ff_putpixel(uint8_t clr[8]) {
 
 
 int ff_getpixel(uint8_t clr[8]) {
-	int ch = 0;
-	for(uint8_t i = 0; i < 8; ++i) {
-		if((ch = getchar()) == EOF) return -1;
-		clr[i] = ch;
-	}
-	return 0;
+	return (read(0, clr, 8) != 8) ? -1 : 0;
 }
 
 uint32_t ff_scan2sz(uint8_t scan[4]) {
 	return (
-		scan[0] * 0x1000000 +
-		scan[1] * 0x10000 +
-		scan[2] * 0x100 +
-		scan[3]
+		(scan[0] * 0x1000000) +
+		(scan[1] * 0x0010000) +
+		(scan[2] * 0x0000100) +
+		(scan[3] * 0x0000001)
 	);
 }
 
@@ -94,34 +88,13 @@ int ff_chkmagic(void) {
 	return 0;
 }
 
+/* Convert pixel bytes to RGBA u16s */
 void ff_pixfmt4clr(uint8_t p[8], uint16_t c[4]) {
 	for(uint8_t i = 0; i < 4; ++i) c[i] = (p[2*i] * 0x100) + p[2*i + 1];
 }
 
+/* Convert RGBA u16s to pixel bytes */
 void ff_4clrfmtpix(uint16_t c[4], uint8_t p[8]) {
 	for(uint8_t i = 0; i < 4; ++i) p[2*i] = c[i] / 0x100, p[2*i + 1] = c[i] % 0x100;
 }
-
-/* stderr output wrappers */
-int ff_log_getclr(char* color, uint8_t p[8]) {
-	int ret = 0;
-	if((ret = ff_getclr(color, p)))
-		fprintf(stderr, "Error: invalid color\n");
-	return ret;
-}
-
-int ff_log_chkmagic(void) {
-	int ret = 0;
-	if((ret = ff_chkmagic()))
-		fprintf(stderr, "ERROR: farbfeld magic value not present! The image may be corrupted.\n");
-	return ret;
-}
-
-int ff_log_getpixel(uint8_t p[8]) {
-	int ret = 0;
-	if((ret =ff_getpixel(p)))
-		fprintf(stderr, "ERROR: Early EOF!\n");
-	return ret;
-}
-
 

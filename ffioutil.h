@@ -18,8 +18,3 @@ int ff_putpixel(uint8_t[8]);
 
 void ff_pixfmt4clr(uint8_t[8], uint16_t[4]);
 void ff_4clrfmtpix(uint16_t[4], uint8_t[8]);
-
-/* stderr output wrappers */
-int ff_log_getclr(char*, uint8_t[8]);
-int ff_log_chkmagic(void);
-int ff_log_getpixel(uint8_t[8]);

@@ -4,6 +4,27 @@
 
 #include "ffioutil.h"
 
+int ff_log_getclr(char* color, uint8_t p[8]) {
+	int ret = 0;
+	if((ret = ff_getclr(color, p)))
+		fprintf(stderr, "Error: invalid color\n");
+	return ret;
+}
+
+int ff_log_chkmagic(void) {
+	int ret = 0;
+	if((ret = ff_chkmagic()))
+		fprintf(stderr, "ERROR: farbfeld magic value not present! The image may be corrupted.\n");
+	return ret;
+}
+
+int ff_log_getpixel(uint8_t p[8]) {
+	int ret = 0;
+	if((ret =ff_getpixel(p)))
+		fprintf(stderr, "ERROR: Early EOF!\n");
+	return ret;
+}
+
 /*
 NAME
 	ff_init - print farbfeld image with given dimensions and color to stdout
