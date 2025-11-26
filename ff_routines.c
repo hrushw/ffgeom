@@ -28,7 +28,7 @@ int ff_init(
 }
 
 static inline int in_rect(uint32_t x, uint32_t y, uint32_t x0, uint32_t y0, uint32_t w, uint32_t h) {
-	return x > x0 && y >= y0 && (x0 - x) < w && (y0 - y) < h;
+	return x >= x0 && y >= y0 && (x - x0) < w && (y - y0) < h;
 }
 
 /*
