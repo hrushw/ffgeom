@@ -28,4 +28,4 @@ ffioutil.o: $(FFIOUTIL)
 	$(CCOMP) ffioutil.c -c -o ffioutil.o
 
 clean:
-	rm -f *.o test
+	rm -f *.o routines/*.o test
