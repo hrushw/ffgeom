@@ -13,9 +13,10 @@ uint8_t ff_chtohex(char ch) {
 }
 
 int ff_scanclr(char* clr, uint8_t p[8]) {
-	uint8_t n;
+	uint8_t n, hex;
+
 	for(n = 0; clr[n] && n < 16; ++n) {
-		uint8_t hex = ff_chtohex(clr[n]);
+		hex = ff_chtohex(clr[n]);
 		if(hex >= 16) break;
 		/* Convert 2 hex digits to byte */
 		p[n/2] = (n % 2) ? (p[n/2] * 16) + hex : hex;
@@ -69,8 +70,10 @@ int ff_getpixel(int fd, uint8_t clr[8]) {
 }
 
 int ff_skippixels(int fd, uint64_t sz) {
+	uint32_t i;
 	uint8_t p[8];
-	for(uint32_t i = 0; i < sz; ++i)
+
+	for(i = 0; i < sz; ++i)
 		if(ff_getpixel(fd, p)) return -1;
 	return 0;
 }
@@ -90,8 +93,10 @@ int ff_magic(int fd) {
 
 int ff_chkmagic(int fd) {
 	char magic[8] = {0};
+	uint8_t i;
+
 	if(read(fd, magic, 8) != 8) return -1;
-	for(uint8_t i = 0; i < 8; ++i)
+	for(i = 0; i < 8; ++i)
 		if(magic[i] != farbfeld[i]) return -1;
 	return 0;
 }
@@ -103,7 +108,9 @@ void ff_pixfmt4clr(uint8_t p[8], uint16_t c[4]) {
 
 /* Convert RGBA u16s to pixel bytes */
 void ff_4clrfmtpix(uint16_t c[4], uint8_t p[8]) {
-	for(uint8_t i = 0; i < 4; ++i) p[2*i] = c[i] / 0x100, p[2*i + 1] = c[i] % 0x100;
+	uint8_t i;
+
+	for(i = 0; i < 4; ++i) p[2*i] = c[i] / 0x100, p[2*i + 1] = c[i] % 0x100;
 }
 
 void ff_header_init(int fd, uint32_t width, uint32_t height) {
@@ -114,6 +121,7 @@ void ff_header_init(int fd, uint32_t width, uint32_t height) {
 
 void ff_getsz(int fd, uint32_t *w, uint32_t *h) {
 	uint8_t p[8] = {0};
+
 	ff_getpixel(fd, p);
 	*w = ff_scan2sz(p  );
 	*h = ff_scan2sz(p+4);
