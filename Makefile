@@ -1,17 +1,24 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -Wpedantic -Wvla
+IFLAGS=-I .
 
-CCOMP=$(CC) $(CFLAGS)
+CCOMP=$(CC) $(CFLAGS) $(IFLAGS)
 
-OBJS=ffioutil.o ff_routines.o
+OBJS=ffioutil.o routines/rect.o routines/blip.o routines/overlay.o
 
-all: ff_routines.o ffioutil.o
+all: $(OBJS)
 
-test: test.c ff_routines.c ffioutil.c ff_routines.h ffioutil.h ffioutil.c
+routines/rect.o: routines/rect.c ffioutil.h ffioutil.c
+	$(CCOMP) -c routines/rect.c -o routines/rect.o
+
+routines/blip.o: routines/blip.c ffioutil.h ffioutil.c
+	$(CCOMP) -c routines/blip.c -o routines/blip.o
+
+routines/overlay.o: routines/overlay.c ffioutil.h ffioutil.c
+	$(CCOMP) -c routines/overlay.c -o routines/overlay.o
+
+test: test.c ff_routines.c ffioutil.c ff_routines.h ffioutil.h
 	$(CCOMP) test.c ff_routines.c ffioutil.c -o test
-
-ff_routines.o: ff_routines.c ff_routines.h ffioutil.h
-	$(CCOMP) ff_routines.c -c -o ff_routines.o
 
 ffioutil.o: ffioutil.c ffioutil.h
 	$(CCOMP) ffioutil.c -c -o ffioutil.o

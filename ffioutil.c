@@ -49,7 +49,7 @@ int ff_getclr(char* color, uint8_t p[8]) {
 
 
 /* print number in network byte order */
-int ff_pn_nbo(uint32_t n) {
+int ff_pn_nbo(int fd, uint32_t n) {
 	uint8_t nbo[4] = {0};
 	nbo[3] = n % 0x100; n /= 0x100;
 	nbo[2] = n % 0x100; n /= 0x100;
@@ -57,15 +57,22 @@ int ff_pn_nbo(uint32_t n) {
 	nbo[1] = n / 0x100;
 	nbo[0] = n % 0x100;
 
-	return (write(1, nbo, 4) != 4) ? -1 : 0;
+	return (write(fd, nbo, 4) != 4) ? -1 : 0;
 }
 
-int ff_putpixel(uint8_t clr[8]) {
-	return (write(1, clr, 8) != 8) ? -1 : 0;
+int ff_putpixel(int fd, uint8_t clr[8]) {
+	return (write(fd, clr, 8) != 8) ? -1 : 0;
 }
 
-int ff_getpixel(uint8_t clr[8]) {
-	return (read(0, clr, 8) != 8) ? -1 : 0;
+int ff_getpixel(int fd, uint8_t clr[8]) {
+	return (read(fd, clr, 8) != 8) ? -1 : 0;
+}
+
+int ff_skippixels(int fd, uint64_t sz) {
+	uint8_t p[8];
+	for(uint32_t i = 0; i < sz; ++i)
+		if(ff_getpixel(fd, p)) return -1;
+	return 0;
 }
 
 uint32_t ff_scan2sz(uint8_t scan[4]) {
@@ -77,13 +84,13 @@ uint32_t ff_scan2sz(uint8_t scan[4]) {
 	);
 }
 
-int ff_magic(void) {
-	return (write(1, farbfeld, 8) != 8) ? -1 : 0;
+int ff_magic(int fd) {
+	return (write(fd, farbfeld, 8) != 8) ? -1 : 0;
 }
 
-int ff_chkmagic(void) {
+int ff_chkmagic(int fd) {
 	char magic[8] = {0};
-	if(read(0, magic, 8) != 8) return -1;
+	if(read(fd, magic, 8) != 8) return -1;
 	for(uint8_t i = 0; i < 8; ++i)
 		if(magic[i] != farbfeld[i]) return -1;
 	return 0;
@@ -97,5 +104,18 @@ void ff_pixfmt4clr(uint8_t p[8], uint16_t c[4]) {
 /* Convert RGBA u16s to pixel bytes */
 void ff_4clrfmtpix(uint16_t c[4], uint8_t p[8]) {
 	for(uint8_t i = 0; i < 4; ++i) p[2*i] = c[i] / 0x100, p[2*i + 1] = c[i] % 0x100;
+}
+
+void ff_header_init(int fd, uint32_t width, uint32_t height) {
+	ff_magic(fd);
+	ff_pn_nbo(fd, width);
+	ff_pn_nbo(fd, height);
+}
+
+void ff_getsz(int fd, uint32_t *w, uint32_t *h) {
+	uint8_t p[8] = {0};
+	ff_getpixel(fd, p);
+	*w = ff_scan2sz(p  );
+	*h = ff_scan2sz(p+4);
 }
 
