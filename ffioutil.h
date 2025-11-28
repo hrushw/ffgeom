@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 
+struct u128 {
+	uint64_t low;
+	uint64_t high;
+};
+
 void ff_argchk(int, int, char*);
 
 int ff_scanclr(char*, uint8_t[8]);

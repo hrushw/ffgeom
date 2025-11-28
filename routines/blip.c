@@ -3,20 +3,19 @@
 
 void blip (
 	uint32_t x, uint32_t y, uint32_t w, uint32_t h,
-	uint8_t clrs[4][8], uint8_t p[8]
+	uint16_t c[4][4], uint8_t p[8]
 ) {
-	uint16_t c[4][4] = {{0}};
+	uint16_t cout[2][4] = {{0}};
 	uint8_t i;
 
-	for(i = 0; i < 4; ++i) ff_pixfmt4clr(clrs[i], c[i]);
+	for(i = 0; i < 4; ++i) {
+		cout[0][i] = ((c[0][i] * (w - x)) + (c[1][i] * x)) / w;
+		cout[1][i] = ((c[2][i] * (w - x)) + (c[3][i] * x)) / w;
 
-	for(i = 0; i < 4; ++i)
-		c[0][i] = (
-			( (c[0][i] * (w - x)) + (c[1][i] * x) ) * (h - y) +
-			( (c[2][i] * (w - x)) + (c[3][i] * x) ) * y
-		) / (w * h);
+		cout[0][i] = ((cout[0][i] * (h - y)) + (cout[1][i] * y)) / h;
+	}
 
-	ff_4clrfmtpix(c[0], p);
+	ff_4clrfmtpix(cout[0], p);
 }
 
 /* ff_blip (width height color0 color1 color2 color3)
@@ -27,12 +26,16 @@ int ff_blip (
 	uint8_t clrs[4][8]
 ) {
 	uint32_t y, x;
+	uint16_t c[4][4] = {{0}};
 	uint8_t p[8] = {0};
+	uint8_t i;
+
+	for(i = 0; i < 4; ++i) ff_pixfmt4clr(clrs[i], c[i]);
 
 	ff_header_init(fd, width, height);
 	for(y = 0; y < height; ++y)
 		for(x = 0; x < width; ++x)
-			blip(x, y, width, height, clrs, p), ff_putpixel(fd, p);
+			blip(x, y, width, height, c, p), ff_putpixel(fd, p);
 
 	return 0;
 }

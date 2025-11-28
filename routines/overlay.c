@@ -3,12 +3,7 @@
 
 /* ff_rect (width height color)
  * print farbfeld image with given dimensions and color to stdout */
-#define FF_OVERLAY_CROP 0x1
-
-#define HEX_4 0x10000
-#define HEX_8 0x100000000
-
-void overlay(uint8_t p0[8], uint8_t p1[8], uint8_t p[8]) {
+void overlay_(uint8_t p0[8], uint8_t p1[8], uint8_t p[8]) {
 	uint16_t c[2][4] = {{0}};
 
 	ff_pixfmt4clr(p0, c[0]);
@@ -16,19 +11,26 @@ void overlay(uint8_t p0[8], uint8_t p1[8], uint8_t p[8]) {
 
 	/* blend colors */
 	uint32_t a1a2 = c[0][3] * c[1][3];
+	uint32_t alpha = ((c[0][3] + c[1][3]) * 0x10000) - a1a2;
 
-	for(uint8_t i = 0; i < 3; ++i)
-		c[0][i] = (
-			( (c[0][i]*c[0][3] + c[1][i]*c[1][3]) * HEX_4 ) -
-			c[0][i] * a1a2
-		) / HEX_8;
+	for(uint8_t i = 0; i < 3; ++i) {
+		uint32_t c0a0 = c[0][i] * c[0][3];
+		uint32_t c1a1 = c[1][i] * c[1][3];
+		uint64_t c0a0a1 = c[0][i] * a1a2;
+		c[0][i] = ( ((c0a0 + c1a1) * 0x10000 ) - c0a0a1);
+	}
 
 	/* new alpha */
-	c[0][3] = (
-		((c[0][3] + c[1][3]) * HEX_4) - a1a2
-	) / HEX_4;
+	c[0][3] = alpha / 0x10000;
 
 	ff_4clrfmtpix(c[0], p);
+}
+
+void overlay(uint8_t p0[8], uint8_t p1[8], uint8_t p[8]) {
+	uint16_t c[2][4] = {{0}};
+	ff_pixfmt4clr(p0, c[0]);
+	ff_pixfmt4clr(p1, c[1]);
+	ff_4clrfmtpix(c[1], p);
 }
 
 int ff_overlay (
@@ -53,6 +55,7 @@ int ff_overlay (
 	yskip = y0 + layerh > baseh ?
 		(y0 + layerh - baseh) * layerw : 0;
 
+	ff_header_init(outfd, basew, baseh);
 	for(y = 0; y < baseh; ++y) {
 		ycheck = (y >= y0 && (y - y0) < layerh);
 
