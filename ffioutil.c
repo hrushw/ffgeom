@@ -110,20 +110,25 @@ void ff_pixfmt4clr(uint8_t p[8], uint16_t c[4]) {
 void ff_4clrfmtpix(uint16_t c[4], uint8_t p[8]) {
 	uint8_t i;
 
-	for(i = 0; i < 4; ++i) p[2*i] = c[i] / 0x100, p[2*i + 1] = c[i] % 0x100;
+	for(i = 0; i < 4; ++i)
+		p[2*i] = c[i] / 0x100, p[2*i + 1] = c[i] % 0x100;
 }
 
-void ff_header_init(int fd, uint32_t width, uint32_t height) {
-	ff_magic(fd);
-	ff_pn_nbo(fd, width);
-	ff_pn_nbo(fd, height);
+int ff_header_init(int fd, uint32_t width, uint32_t height) {
+	return (
+		ff_magic(fd) ||
+		ff_pn_nbo(fd, width) ||
+		ff_pn_nbo(fd, height)
+	) ? -1 : 0;
 }
 
-void ff_getsz(int fd, uint32_t *w, uint32_t *h) {
+int ff_getsz(int fd, uint32_t *w, uint32_t *h) {
 	uint8_t p[8] = {0};
 
-	ff_getpixel(fd, p);
+	if(ff_getpixel(fd, p)) return -1;
 	*w = ff_scan2sz(p  );
 	*h = ff_scan2sz(p+4);
+
+	return 0;
 }
 

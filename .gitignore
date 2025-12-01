@@ -1,6 +1,6 @@
 *.o
 ffgeom
-test[0-9]*
+test
 *.ff
 *.png
 *.txt

@@ -2,20 +2,23 @@
 #include "ffioutil.h"
 
 void blip (
-	uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+	uint16_t x, uint16_t y, uint16_t w, uint16_t h,
 	uint16_t c[4][4], uint8_t p[8]
 ) {
-	uint16_t cout[2][4] = {{0}};
+	uint16_t c_[4] = {0};
 	uint8_t i;
 
 	for(i = 0; i < 4; ++i) {
-		cout[0][i] = ((c[0][i] * (w - x)) + (c[1][i] * x)) / w;
-		cout[1][i] = ((c[2][i] * (w - x)) + (c[3][i] * x)) / w;
+		uint32_t c0 = ((c[0][i] * (w - x)) + (c[1][i] * x)) ;
+		uint32_t c1 = ((c[2][i] * (w - x)) + (c[3][i] * x)) ;
 
-		cout[0][i] = ((cout[0][i] * (h - y)) + (cout[1][i] * y)) / h;
+		c_[i] = (
+			(c0 * (h - y)) +
+			(c1 * y)
+		) / (w*h);
 	}
 
-	ff_4clrfmtpix(cout[0], p);
+	ff_4clrfmtpix(c_, p);
 }
 
 /* ff_blip (width height color0 color1 color2 color3)
@@ -30,6 +33,7 @@ int ff_blip (
 	uint8_t p[8] = {0};
 	uint8_t i;
 
+	if(width > UINT16_MAX || height > UINT32_MAX) return -1;
 	for(i = 0; i < 4; ++i) ff_pixfmt4clr(clrs[i], c[i]);
 
 	ff_header_init(fd, width, height);

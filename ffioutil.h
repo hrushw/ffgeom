@@ -27,7 +27,7 @@ int ff_skippixels(int, uint64_t);
 void ff_pixfmt4clr(uint8_t[8], uint16_t[4]);
 void ff_4clrfmtpix(uint16_t[4], uint8_t[8]);
 
-void ff_header_init(int, uint32_t, uint32_t);
-void ff_getsz(int, uint32_t*, uint32_t*);
+int ff_header_init(int, uint32_t, uint32_t);
+int ff_getsz(int, uint32_t*, uint32_t*);
 
 #endif
