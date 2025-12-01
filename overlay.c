@@ -28,7 +28,7 @@ void overlay(uint8_t p0[8], uint8_t p1[8], uint8_t p[8]) {
 }
 
 int ff_overlay (
-	int basefd, int layerfd, int outfd,
+	int outfd, int basefd, int layerfd,
 	uint32_t x0, uint32_t y0
 ) {
 	uint32_t basew, baseh, layerw, layerh, y, x;
